@@ -31,18 +31,7 @@ const getUserWithEmail = (email) => {
     return null;
   })
 };
-// function(email) {
-//   let user;
-//   for (const userId in users) {
-//     user = users[userId];
-//     if (user.email.toLowerCase() === email.toLowerCase()) {
-//       break;
-//     } else {
-//       user = null;
-//     }
-//   }
-//   return Promise.resolve(user);
-// }
+
 exports.getUserWithEmail = getUserWithEmail;
 
 /**
@@ -87,12 +76,6 @@ const addUser = (user) => {
   })
 };
 
-// function(user) {
-//   const userId = Object.keys(users).length + 1;
-//   user.id = userId;
-//   users[userId] = user;
-//   return Promise.resolve(user);
-// }
 exports.addUser = addUser;
 
 /// Reservations
@@ -102,8 +85,20 @@ exports.addUser = addUser;
  * @param {string} guest_id The id of the user.
  * @return {Promise<[{}]>} A promise to the reservations.
  */
-const getAllReservations = function(guest_id, limit = 10) {
-  return getAllProperties(null, 2);
+const getAllReservations = (guest_id) => {
+  const values = [guest_id]
+  return pool.query(`
+  SELECT *
+  FROM reservations
+  WHERE reservations.guest_id = $1
+  LIMIT 10;
+  `, values)
+  .then((res) => {
+    return (res.rows);
+  })
+  .catch((err) => {
+    console.log(err.message);
+  })
 }
 exports.getAllReservations = getAllReservations;
 
